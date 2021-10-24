@@ -77,7 +77,10 @@ const styles = StyleSheet.create({
   Container: {
     height: 100
   },
-  FavoriteContainer: {},
+  FavoriteContainer: {
+    borderColor: 'black',
+    borderBottomWidth: 1
+  },
   ActiveVerse: {
     backgroundColor: 'yellow'
   },
