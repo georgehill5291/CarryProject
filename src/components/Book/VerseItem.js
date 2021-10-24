@@ -26,8 +26,9 @@ const VerseItem = ({ navigation, item, isFavorite = false }) => {
   };
 
   const onVersePress4Favorite = () => {
-    console.log('bookId', item);
+    console.log('item.text', item.text);
     navigation.navigate('BookDetail', {
+      scrollText: item.text,
       bookId: `${item.book_name} ${item.chapter}`
     });
   };
@@ -52,15 +53,16 @@ const VerseItem = ({ navigation, item, isFavorite = false }) => {
         await Storage.setItem('favoriteVerses', books);
       }
     } else {
-      const newFavoriteVerses = favoriteVerses.filter(
-        t => t.text !== item.text
-      );
+      let newFavoriteVerses = favoriteVerses.filter(t => t.text !== item.text);
+      if (newFavoriteVerses.length < 1) {
+        newFavoriteVerses = [];
+      }
       await Storage.setItem('favoriteVerses', newFavoriteVerses);
     }
   };
 
   return (
-    <View>
+    <View style={isFavorite ? styles.FavoriteContainer : styles.Container}>
       <TouchableHighlight
         activeOpacity={1}
         style={isActive ? styles.ActiveVerse : styles.NormalVerse}
@@ -72,6 +74,10 @@ const VerseItem = ({ navigation, item, isFavorite = false }) => {
 };
 
 const styles = StyleSheet.create({
+  Container: {
+    height: 100
+  },
+  FavoriteContainer: {},
   ActiveVerse: {
     backgroundColor: 'yellow'
   },

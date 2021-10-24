@@ -1,31 +1,37 @@
 import axios from 'axios';
-import React, { useContext, useEffect, useState } from 'react';
-import {
-  ScrollView,
-  StyleSheet,
-  Text,
-  TouchableHighlight,
-  TouchableOpacity,
-  View
-} from 'react-native';
-import theme from '../assets/theme';
+import React, { useContext, useEffect, useRef, useState } from 'react';
+import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import VerseItem from '../components/Book/VerseItem';
 import LoadingView from '../components/shared/LoadingView';
 import { BookContext } from '../context/BookContext';
 import { apiUrl } from '../helper/ConstUtil';
 
 const BookDetailScreen = ({ route, navigation }) => {
-  const { bookId } = route.params;
+  const { bookId, scrollText } = route.params;
   const [isLoading, setIsLoading] = useState(true);
   const [verseListing, setVerseListing] = useState([]);
+  const scrollViewRef = useRef();
 
   const { getBook, getLocalVerse } = useContext(BookContext);
 
   useEffect(() => {
     async function fetchMyAPI() {
       const response = await axios.get(`${apiUrl}/${bookId}`);
-      console.log('data', response.data.verses);
+      // console.log('data', response.data.verses);
       setVerseListing(response.data.verses);
+      setIsLoading(false);
+      console.log('scrollText', scrollText);
+
+      if (scrollText) {
+        const indexScrollText = response.data.verses.findIndex(
+          x => x.text === scrollText
+        );
+        console.log('indexScrollText', indexScrollText);
+
+        setTimeout(() => {
+          scrollViewRef.current.scrollTo({ y: indexScrollText * 100 });
+        }, 100);
+      }
     }
     fetchMyAPI();
     getLocalVerse();
@@ -33,9 +39,9 @@ const BookDetailScreen = ({ route, navigation }) => {
 
   return (
     <View style={styles.Container}>
-      {/* {isLoading ? <LoadingView /> : <></>} */}
       <Text style={styles.BookTitle}>{bookId}</Text>
-      <ScrollView>
+      {isLoading ? <LoadingView /> : <></>}
+      <ScrollView ref={scrollViewRef}>
         {verseListing &&
           verseListing.length > 0 &&
           verseListing.map(item => (

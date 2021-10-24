@@ -5,24 +5,33 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import BibleBookScreen from './BibleBookScreen';
 import FavoriteScreen from './FavoriteScreen';
 import { BookContext } from '../context/BookContext';
+import Storage from '../helper/Storage';
 
 const Tab = createBottomTabNavigator();
 
-const HomeScreen = () => {
-  const {
-    bookState: { localVerseListing },
-    getLocalVerse
-  } = useContext(BookContext);
-
+const HomeScreen = ({ navigation }) => {
   useEffect(() => {
-    getLocalVerse();
+    async function callAsyncFunction() {
+      let localVerseListing = await Storage.getItem('favoriteVerses');
+      console.log('favoriteVerses', localVerseListing);
+      if (localVerseListing && localVerseListing.length > 0) {
+        navigation.navigate('Favorite');
+      }
+    }
+    callAsyncFunction();
   }, []);
 
   return (
     <Tab.Navigator
       initialRouteName="BibleBook"
       screenOptions={{
-        tabBarActiveTintColor: '#e91e63'
+        tabBarActiveTintColor: '#e91e63',
+        tabBarLabelPosition: 'beside-icon',
+        tabBarLabelStyle: {
+          fontWeight: '700',
+          fontSize: 15
+        },
+        tabBarIconStyle: { display: 'none' }
       }}>
       <Tab.Screen
         name="Favorite"
@@ -35,7 +44,8 @@ const HomeScreen = () => {
         name="BibleBook"
         component={BibleBookScreen}
         options={{
-          headerShown: false
+          headerShown: false,
+          tabBarIcon: null
         }}
       />
     </Tab.Navigator>
