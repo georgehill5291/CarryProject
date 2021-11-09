@@ -62,29 +62,30 @@ const VerseItem = ({ navigation, item, isFavorite = false }) => {
   };
 
   return (
-    <View style={isFavorite ? styles.FavoriteContainer : styles.Container}>
-      <TouchableHighlight
-        activeOpacity={1}
-        style={isActive ? styles.ActiveVerse : styles.NormalVerse}
-        onPress={onVersePress}>
-        <Text style={styles.VerItemWrapper}>{item.text}</Text>
-      </TouchableHighlight>
-    </View>
+    <Text
+      style={isActive ? styles.ActiveVerse : styles.NormalVerse}
+      onPress={onVersePress}>
+      {item.text}
+    </Text>
   );
 };
 
 const styles = StyleSheet.create({
   Container: {
-    height: 100
+    // height: 100
   },
   FavoriteContainer: {
     borderColor: 'black',
     borderBottomWidth: 1
   },
   ActiveVerse: {
-    backgroundColor: 'yellow'
+    backgroundColor: 'yellow',
+    lineHeight: 30,
+    alignSelf: 'flex-start'
   },
-  NormalVerse: {},
+  NormalVerse: {
+    lineHeight: 30
+  },
   VerItemWrapper: {
     paddingLeft: theme.spacing.m,
     paddingRight: theme.spacing.m

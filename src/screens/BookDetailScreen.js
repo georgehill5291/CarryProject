@@ -1,6 +1,7 @@
 import axios from 'axios';
 import React, { useContext, useEffect, useRef, useState } from 'react';
-import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Animated, ScrollView, StyleSheet, Text, View } from 'react-native';
+import theme from '../assets/theme';
 import VerseItem from '../components/Book/VerseItem';
 import LoadingView from '../components/shared/LoadingView';
 import { BookContext } from '../context/BookContext';
@@ -18,7 +19,11 @@ const BookDetailScreen = ({ route, navigation }) => {
     async function fetchMyAPI() {
       const response = await axios.get(`${apiUrl}/${bookId}`);
       // console.log('data', response.data.verses);
-      setVerseListing(response.data.verses);
+      const tempVerse = response.data.verses.map(t =>
+        t.text ? { ...t, text: t.text.replace('\n', ' ') } : { ...t }
+      );
+      console.log('data', tempVerse);
+      setVerseListing(tempVerse);
       setIsLoading(false);
       console.log('scrollText', scrollText);
 
@@ -29,7 +34,7 @@ const BookDetailScreen = ({ route, navigation }) => {
         console.log('indexScrollText', indexScrollText);
 
         setTimeout(() => {
-          scrollViewRef.current.scrollTo({ y: indexScrollText * 100 });
+          scrollViewRef.current.scrollToIndex({ y: indexScrollText });
         }, 100);
       }
     }
@@ -37,20 +42,26 @@ const BookDetailScreen = ({ route, navigation }) => {
     getLocalVerse();
   }, []);
 
+  const handleScroll = event => {
+    console.log(event.nativeEvent.contentOffset.y);
+  };
+
   return (
     <View style={styles.Container}>
       <Text style={styles.BookTitle}>{bookId}</Text>
       {isLoading ? <LoadingView /> : <></>}
-      <ScrollView ref={scrollViewRef}>
-        {verseListing &&
-          verseListing.length > 0 &&
-          verseListing.map(item => (
-            <VerseItem
-              item={item}
-              key={item.verse}
-              style={styles.VerItemWrapper}
-            />
-          ))}
+      <ScrollView
+        ref={scrollViewRef}
+        style={styles.ScrollView}
+        onScroll={handleScroll}
+        scrollEventThrottle={16}>
+        <Text style={styles.VerItemWrapper}>
+          {verseListing &&
+            verseListing.length > 0 &&
+            verseListing.map(item => (
+              <VerseItem item={item} key={item.verse} />
+            ))}
+        </Text>
       </ScrollView>
     </View>
   );
@@ -69,10 +80,14 @@ const styles = StyleSheet.create({
   BookVerse: {
     fontSize: 12
   },
-  ActiveVerse: {
-    backgroundColor: 'yellow'
+  ScrollView: {
+    paddingLeft: theme.spacing.m,
+    paddingRight: theme.spacing.m
   },
-  NormalVerse: {}
+  VerItemWrapper: {
+    flexDirection: 'row',
+    flexShrink: 1
+  }
 });
 
 export default BookDetailScreen;

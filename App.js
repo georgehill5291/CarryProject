@@ -13,6 +13,7 @@ import BookContextProvider from './src/context/BookContext';
 import BibleBookScreen from './src/screens/BibleBookScreen';
 import BookDetailScreen from './src/screens/BookDetailScreen';
 import HomeScreen from './src/screens/HomeScreen';
+import TestScreen from './src/screens/TestScreen';
 
 const App: () => Node = () => {
   const Stack = createNativeStackNavigator();
@@ -21,6 +22,11 @@ const App: () => Node = () => {
     <BookContextProvider>
       <NavigationContainer>
         <Stack.Navigator>
+          {/* <Stack.Screen
+            name="Test"
+            component={TestScreen}
+            options={{ headerShown: false }}
+          /> */}
           <Stack.Screen
             name="Home"
             component={HomeScreen}
